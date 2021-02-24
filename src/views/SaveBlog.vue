@@ -14,7 +14,7 @@
           <mavon-editor v-model="ruleForm.content"></mavon-editor>
         </el-form-item>
         <el-form-item style="margin-left: 32%">
-          <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">立即发布</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -64,6 +64,8 @@ export default {
             this.$router.push('/blogs')
           }
         });
+      }).catch(res => {
+        this.$message.error('发布失败，请尝试重新登陆或联系管理员')
       })
     },
     submitForm(formName) {

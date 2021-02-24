@@ -14,7 +14,7 @@
           <mavon-editor v-model="ruleForm.content"></mavon-editor>
         </el-form-item>
         <el-form-item style="margin-left: 32%">
-          <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">立即修改</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -86,6 +86,7 @@ export default {
     const blogId = this.$route.params.blogId || '0'
     this.$axios.get('/blog/' + blogId).then(res => {
       this.ruleForm = res.data.data
+      this.ruleForm.userId = '-1'
     })
   }
 }

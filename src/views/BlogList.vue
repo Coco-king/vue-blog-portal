@@ -6,21 +6,34 @@
         <ul class="infinite-list" v-infinite-scroll="load" :infinite-scroll-disabled="isDisable"
             :infinite-scroll-immediate="false" style="overflow:auto">
           <el-timeline>
-            <li v-for="blog in blogList" :key="blog.id" class="infinite-list-item">
-              <el-timeline-item :timestamp="dateFormat(blog.created)" placement="top">
-                <el-card>
-                  <h4>{{ blog.title }}</h4>
-                  <p>{{ blog.description }}</p>
-                </el-card>
-              </el-timeline-item>
-            </li>
+            <el-collapse accordion v-model="activeName" @change="handleChange">
+              <li v-for="blog in blogList" :key="blog.id" class="infinite-list-item">
+                <el-timeline-item :timestamp="dateFormat(blog.created)" placement="top">
+                  <el-card>
+                    <el-link :href="/blog/+blog.id" :underline="false">
+                      <h3 style="margin: 5px 0">
+                        {{ blog.title.length < 35 ? blog.title : blog.title.substring(0, 35) + '...' }}
+                      </h3>
+                    </el-link>
+                    <div>
+                      <el-collapse-item v-if="blog.description.length >= 50"
+                                        :title="isDesc ? '点击收起' :'点击展开'" :name="blog.id">
+                        <div>{{ blog.description }}</div>
+                      </el-collapse-item>
+                      <p v-else>{{ blog.description }}</p>
+                    </div>
+                  </el-card>
+                </el-timeline-item>
+              </li>
+            </el-collapse>
           </el-timeline>
         </ul>
       </div>
 
       <div class="blog-right">
         <el-collapse-transition>
-          <el-card :body-style="{ padding: '8px' }" class="box-card" v-show="showLastLogin" style="position: relative">
+          <el-card :body-style="{ padding: '0px',paddingTop: '5px' }" class="box-card" v-show="showLastLogin === '1'"
+                   style="position: relative;margin-bottom: 12px">
             <img height="232"
                  src="https://s3.ax1x.com/2021/02/23/yLwx5n.jpg"
                  alt="上次登录时间" class="image">
@@ -29,7 +42,7 @@
               <div class="bottom clearfix">
                 <time class="time">{{ user.lastLogin }}</time>
                 <el-tooltip class="item" effect="dark" content="点击关闭该卡片" placement="right">
-                  <el-button icon="el-icon-close" circle size="mini" plain @click="showLastLogin = false"
+                  <el-button icon="el-icon-close" circle size="mini" plain @click="closeLastLogin"
                              style="float:right;position:absolute;right: 12px;bottom: 15px"></el-button>
                 </el-tooltip>
               </div>
@@ -37,27 +50,8 @@
           </el-card>
         </el-collapse-transition>
 
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span class="card-th"> <i class="el-icon-reading"></i>&emsp;栏目分类</span>
-            <el-button v-show="showCategory" style="float: right; padding: 3px 0"
-                       @click="showCategory = false" type="text">点击收起
-            </el-button>
-            <el-button v-show="!showCategory" style="float: right; padding: 3px 0"
-                       @click="showCategory = true" type="text">点击展开
-            </el-button>
-          </div>
-          <el-collapse-transition>
-            <div v-show="showCategory">
-              <div v-for="o in 4" :key="o" class="text item">
-                <el-link :underline="false" icon="el-icon-view el-icon--right">
-                  {{ '列表内容 ' + o }}
-                </el-link>
-                <el-badge class="mark" :max="99" type="info" :value="category.count"/>
-              </div>
-            </div>
-          </el-collapse-transition>
-        </el-card>
+        <RightCard/>
+
       </div>
     </div>
     <el-backtop :visibility-height="60">
@@ -68,6 +62,7 @@
 
 <script>
 import Header from "@/components/Header";
+import RightCard from "@/components/RightCard";
 import moment from "moment";
 
 export default {
@@ -76,24 +71,30 @@ export default {
     return {
       page: 1,
       size: 10,
+      activeName: '0',
+      isDesc: false,
       isDisable: false,
-      showLastLogin: false,
-      showCategory: true,
+      showLastLogin: '0',
       blogList: [],
       user: {
         lastLogin: ''
-      },
-      category: {
-        count: 0
       }
     };
   },
   methods: {
+    handleChange() {
+      this.isDesc = !this.isDesc
+    },
+    closeLastLogin() {
+      this.showLastLogin = '0'
+      localStorage.setItem('showLastLogin', '0')
+    },
     load() {
       this.$axios.get('/blog/list?page=' + this.page + '&size=' + this.size).then(res => {
         this.page++
         let blogs = res.data.data.records;
         blogs.forEach(blog => {
+          blog.userId = '-1'
           this.blogList.push(blog)
         })
         this.isDisable = blogs.length !== this.size
@@ -107,32 +108,33 @@ export default {
     },
   },
   created() {
+    Header.data().activeIndex = '2'
     const user = sessionStorage.getItem('userInfo');
     if (user) {
-      this.showLastLogin = true;
+      this.showLastLogin = localStorage.getItem('showLastLogin') || '0';
       this.user = JSON.parse(user) || {}
       this.user.lastLogin = this.dateFormat(this.user.lastLogin)
     } else {
 
     }
   },
-  components: {Header}
+  components: {Header, RightCard}
 }
 </script>
 
 <style scoped>
 
 .blog-left {
-  width: 75%;
-  z-index: 2;
-  padding-top: 0.4%;
+  max-width: 75.5%;
+  width: 75.5%;
+  padding-top: 0.6%;
   position: absolute;
 }
 
 .blog-main {
   position: relative;
   margin: 0 auto;
-  max-width: 80%;
+  max-width: 90%;
 }
 
 .blog-right {
@@ -141,39 +143,6 @@ export default {
   position: absolute;
   right: 0;
   top: 0;
-}
-
-.box-card {
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-.mark {
-  float: right;
-  cursor: pointer;
-}
-
-.card-th {
-  font-weight: 1000;
-  color: #666;
-}
-
-.text {
-  font-size: 14px;
-}
-
-.item {
-  margin-bottom: 18px;
-}
-
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
-}
-
-.clearfix:after {
-  clear: both
 }
 
 .time {

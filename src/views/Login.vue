@@ -58,6 +58,7 @@ export default {
         this.$store.commit('SET_USERINFO', res.data.data)
         this.$message.success('登陆成功')
         localStorage.setItem('activeIndex', '2')
+        localStorage.setItem('showLastLogin', '1')
         this.$router.push('/blogs')
       })
     },

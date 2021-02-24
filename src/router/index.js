@@ -32,7 +32,10 @@ const routes = [
     {
         path: '/blog/add',
         name: 'AddBlog',
-        component: SaveBlog
+        component: SaveBlog,
+        meta: {
+            requireAuth: true
+        }
     },
     {
         path: '/blog/:blogId',
@@ -42,7 +45,10 @@ const routes = [
     {
         path: '/blog/:blogId/edit',
         name: 'EditBlog',
-        component: EditBlog
+        component: EditBlog,
+        meta: {
+            requireAuth: true
+        }
     },
 ]
 

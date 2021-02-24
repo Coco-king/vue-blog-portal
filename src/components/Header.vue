@@ -98,6 +98,7 @@ export default {
         this.user = {}
         this.hasLogin = false
         this.$router.push('/blogs')
+        this.$router.go(0)
       })
     }
   },
@@ -115,7 +116,7 @@ export default {
 
 .logo {
   height: 50px;
-  width: 50%;
+  width: 30%;
   margin-top: 5px;
   cursor: pointer;
   float: left;
@@ -131,7 +132,7 @@ export default {
   line-height: 60px;
   float: right;
   min-width: 300px;
-  width: 500px;
+  width: 31%;
   position: relative;
 }
 
