@@ -50,9 +50,7 @@ export default {
   },
   methods: {
     postBlog() {
-      const user = JSON.parse(sessionStorage.getItem('userInfo')) || {};
-      this.ruleForm.userId = user.id
-      this.$axios.post('/blog/edit', this.ruleForm, {
+      this.$axios.post('/blog/add', this.ruleForm, {
         headers: {
           'Authorization': localStorage.getItem('token') || ''
         }
