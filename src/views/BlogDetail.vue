@@ -33,8 +33,12 @@
                 &emsp;{{ blog.talkCount || 0 }}
               </span>
             </el-breadcrumb-item>
-            <el-link v-if="isEdit" :href="'/blog/'+blog.id+'/edit'" icon="el-icon-edit-outline" :underline="false">
+            <el-link v-if="isEdit" :href="'/blog/'+blog.id+'/edit'" icon="el-icon-edit-outline"
+                     style="margin-right: 15px" :underline="false">
               编辑
+            </el-link>
+            <el-link v-if="isEdit" @click="deleteBlog(blog.id)" icon="el-icon-delete" :underline="false">
+              删除
             </el-link>
           </el-breadcrumb>
         </div>
@@ -84,6 +88,16 @@ export default {
     }
   },
   methods: {
+    deleteBlog(id) {
+      this.$axios.delete('/blog/delete/' + id, {
+        headers: {
+          'Authorization': localStorage.getItem('token') || 'null'
+        }
+      }).then(res => {
+        this.$message.success(res.data.message)
+        this.$router.push('/blogs')
+      })
+    },
     logOut() {
       this.$axios.get('/logout', {
         headers: {

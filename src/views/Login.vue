@@ -33,8 +33,8 @@ export default {
     return {
       lastTime: 0,
       ruleForm: {
-        username: 'admin',
-        password: 'adminadmin'
+        username: '',
+        password: ''
       },
       rules: {
         username: [
