@@ -3,7 +3,8 @@ import router from '../router'
 import store from '../store'
 import ElementUI from 'element-ui';
 
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = 'http://121.196.172.171:8080'
+// axios.defaults.baseURL = 'http://localhost:8080'
 
 //前置拦截
 axios.interceptors.request.use(config => {

@@ -5,6 +5,7 @@ import SaveBlog from '../views/SaveBlog'
 import EditBlog from '../views/EditBlog'
 import Login from '../views/Login'
 import Register from '../views/Register'
+import Manage from '../views/Manage'
 
 Vue.use(VueRouter)
 
@@ -46,6 +47,14 @@ const routes = [
         path: '/blog/:blogId/edit',
         name: 'EditBlog',
         component: EditBlog,
+        meta: {
+            requireAuth: true
+        }
+    },
+    {
+        path: '/admin/de0b464c79c44ae390f57b47e3d298da',
+        name: 'Manage',
+        component: Manage,
         meta: {
             requireAuth: true
         }
